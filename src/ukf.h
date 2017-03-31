@@ -1,5 +1,6 @@
 #ifndef UKF_H
 #define UKF_H
+  if(print_result_) {
 
 #include "measurement_package.h"
 #include "Eigen/Dense"
@@ -29,11 +30,11 @@ public:
   ///* state covariance matrix
   MatrixXd P_;
 
-  ///* predicted sigma points matrix
-  MatrixXd Xsig_pred_;
-
   ///* augmented sigma points matrix
   MatrixXd Xsig_aug;
+
+  ///* predicted sigma points matrix
+  MatrixXd Xsig_pred_;
 
   // Sensor Noise 
   MatrixXd R_laser_;

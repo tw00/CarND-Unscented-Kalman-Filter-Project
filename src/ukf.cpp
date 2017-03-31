@@ -255,7 +255,8 @@ void UKF::UpdateLidar(MeasurementPackage measurement_pack) {
   //new estimate
   UpdateState(&x_, &P_, Xsig_pred_, x_, P_, Zsig, z_pred, S, z);
 
-  // TODO: NIS
+  // calculate NIS
+  NIS_lidar_ = ((z - z_pred).transpose()) * S.inverse() * (z - z_pred);
 }
 
 /**
@@ -283,6 +284,9 @@ void UKF::UpdateRadar(MeasurementPackage measurement_pack) {
 
   //new estimate
   UpdateState(&x_, &P_, Xsig_pred_, x_, P_, Zsig, z_pred, S, z);
+
+  // calculate NIS
+  NIS_radar_ = ((z - z_pred).transpose()) * S.inverse() * (z - z_pred);
 }
 
 /**
@@ -334,7 +338,6 @@ void UKF::AugmentedSigmaPoints(MatrixXd* Xsig_out, const VectorXd& x, const Matr
   MatrixXd A_aug = P_aug.llt().matrixL();
   
   //create augmented sigma points
-  
   //set first column of sigma point matrix
   Xsig_aug.col(0)  = x_aug;
 
@@ -346,7 +349,9 @@ void UKF::AugmentedSigmaPoints(MatrixXd* Xsig_out, const VectorXd& x, const Matr
   }  
   
   //print result
-  std::cout << "Xsig_aug = " << std::endl << Xsig_aug << std::endl;
+  if(print_result_) {
+    std::cout << "Xsig_aug = " << std::endl << Xsig_aug << std::endl;
+  }
 
   //write result
   *Xsig_out = Xsig_aug;
@@ -408,7 +413,9 @@ void UKF::SigmaPointPrediction(MatrixXd* Xsig_out, const MatrixXd& Xsig_aug) {
   }
   
   //print result
+  if(print_result_) {
   std::cout << "Xsig_pred = " << std::endl << Xsig_pred << std::endl;
+}
 
   //write result
   *Xsig_out = Xsig_pred;
@@ -462,10 +469,12 @@ void UKF::PredictMeanAndCovariance(VectorXd* x_out, MatrixXd* P_out, const Matri
   }
 
   //print result
+  if(print_result_) {
   std::cout << "Predicted state" << std::endl;
   std::cout << x << std::endl;
   std::cout << "Predicted covariance matrix" << std::endl;
   std::cout << P << std::endl;
+}
 
   //write result
   *x_out = x;
@@ -562,8 +571,10 @@ void UKF::PredictRadarMeasurement(VectorXd* z_out, MatrixXd* S_out, const Matrix
   S = S + R;
 
   //print result
+  if(print_result_) {
   std::cout << "z_pred: " << std::endl << z_pred << std::endl;
   std::cout << "S: " << std::endl << S << std::endl;
+}
 
   //write result
   *z_out = z_pred;
@@ -648,13 +659,16 @@ void UKF::UpdateState(VectorXd* x_out, MatrixXd* P_out, const MatrixXd& Xsig_pre
   P_new = P - K * S * K.transpose();
 
   //print result
+  if(print_result_) {
   std::cout << "Updated state x: " << std::endl << x << std::endl;
   std::cout << "Updated state covariance P: " << std::endl << P << std::endl;
+}
 
   //write result
   *x_out = x_new;
   *P_out = P_new;
 }
+
 
 /*  //measurement covariance matrix - laser
   R_laser_ = MatrixXd(2, 2);
