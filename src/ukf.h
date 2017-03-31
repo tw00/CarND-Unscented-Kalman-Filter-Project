@@ -32,8 +32,22 @@ public:
   ///* predicted sigma points matrix
   MatrixXd Xsig_pred_;
 
+  ///* augmented sigma points matrix
+  MatrixXd Xsig_aug;
+
+  // Sensor Noise 
+  MatrixXd R_laser_;
+  MatrixXd R_radar_;
+
+  // Mean predicted measurement for the Radar data
+  VectorXd z_pred; 
+
+  ///* weights...
+  VectorXd weights;
+
   ///* time when the state is true, in us
-  long long time_us_;
+  //long long time_us_;
+  long long previous_timestamp_;
 
   ///* Process noise standard deviation longitudinal acceleration in m/s^2
   double std_a_;
@@ -74,6 +88,21 @@ public:
   ///* the current NIS for laser
   double NIS_laser_;
 
+  //set state dimension
+  int n_x;
+
+  //set augmented dimension
+  int n_aug;
+
+  //set measurement dimension, radar can measure r, phi, and r_dot
+  int n_z_radar;
+
+  //set measurement dimension, laser can measure x, y
+  int n_z_laser;
+
+  //define spreading parameter
+  double lambda;
+
   /**
    * Constructor
    */
@@ -88,7 +117,7 @@ public:
    * ProcessMeasurement
    * @param meas_package The latest measurement data of either radar or laser
    */
-  void ProcessMeasurement(MeasurementPackage meas_package);
+  void ProcessMeasurement(MeasurementPackage measurement_package);
 
   /**
    * Prediction Predicts sigma points, the state, and the state covariance
@@ -101,18 +130,19 @@ public:
    * Updates the state and the state covariance matrix using a laser measurement
    * @param meas_package The measurement at k+1
    */
-  void UpdateLidar(MeasurementPackage meas_package);
+  void UpdateLidar(MeasurementPackage measurement_package);
 
   /**
    * Updates the state and the state covariance matrix using a radar measurement
    * @param meas_package The measurement at k+1
    */
-  void UpdateRadar(MeasurementPackage meas_package);
+  void UpdateRadar(MeasurementPackage measurement_package);
 
   void AugmentedSigmaPoints(MatrixXd* Xsig_out, const VectorXd& x, const MatrixXd& P);
   void SigmaPointPrediction(MatrixXd* Xsig_out, const MatrixXd& Xsig_aug);
   void PredictMeanAndCovariance(VectorXd* x_out, MatrixXd* P_out, const MatrixXd& Xsig_pred);
   void PredictRadarMeasurement(VectorXd* z_out, MatrixXd* S_out, const MatrixXd& Xsig_pred);
+  void PredictLaserMeasurement(VectorXd* z_out, MatrixXd* S_out, const MatrixXd& Xsig_pred);
   void UpdateState(VectorXd* x_out, MatrixXd* P_out, const MatrixXd& Xsig_pred, const VectorXd& x, const MatrixXd& P,
     const MatrixXd& Zsig, const VectorXd& z_pred, const MatrixXd& S, const VectorXd& z);
 };
