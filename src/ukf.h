@@ -1,6 +1,5 @@
 #ifndef UKF_H
 #define UKF_H
-  if(print_result_) {
 
 #include "measurement_package.h"
 #include "Eigen/Dense"
@@ -14,6 +13,9 @@ using Eigen::VectorXd;
 
 class UKF {
 public:
+
+  ///* set to true to print results after each step
+  bool print_result_;
 
   ///* initially set to false, set to true in first call of ProcessMeasurement
   bool is_initialized_;
@@ -31,7 +33,7 @@ public:
   MatrixXd P_;
 
   ///* augmented sigma points matrix
-  MatrixXd Xsig_aug;
+  MatrixXd Xsig_aug_;
 
   ///* predicted sigma points matrix
   MatrixXd Xsig_pred_;
@@ -131,7 +133,7 @@ public:
    * Updates the state and the state covariance matrix using a laser measurement
    * @param meas_package The measurement at k+1
    */
-  void UpdateLidar(MeasurementPackage measurement_package);
+  void UpdateLaser(MeasurementPackage measurement_package);
 
   /**
    * Updates the state and the state covariance matrix using a radar measurement
@@ -140,12 +142,12 @@ public:
   void UpdateRadar(MeasurementPackage measurement_package);
 
   void AugmentedSigmaPoints(MatrixXd* Xsig_out, const VectorXd& x, const MatrixXd& P);
-  void SigmaPointPrediction(MatrixXd* Xsig_out, const MatrixXd& Xsig_aug);
+  void SigmaPointPrediction(MatrixXd* Xsig_out, const MatrixXd& Xsig_aug, double delta_t);
   void PredictMeanAndCovariance(VectorXd* x_out, MatrixXd* P_out, const MatrixXd& Xsig_pred);
-  void PredictRadarMeasurement(VectorXd* z_out, MatrixXd* S_out, const MatrixXd& Xsig_pred);
-  void PredictLaserMeasurement(VectorXd* z_out, MatrixXd* S_out, const MatrixXd& Xsig_pred);
+  void PredictRadarMeasurement(VectorXd* z_out, MatrixXd* S_out, MatrixXd* Zsig_out, const MatrixXd& Xsig_pred);
+  void PredictLaserMeasurement(VectorXd* z_out, MatrixXd* S_out, MatrixXd* Zsig_out, const MatrixXd& Xsig_pred);
   void UpdateState(VectorXd* x_out, MatrixXd* P_out, const MatrixXd& Xsig_pred, const VectorXd& x, const MatrixXd& P,
-    const MatrixXd& Zsig, const VectorXd& z_pred, const MatrixXd& S, const VectorXd& z);
+    const MatrixXd& Zsig, const VectorXd& z_pred, const MatrixXd& S, const VectorXd& z, MeasurementPackage::SensorType sensor_type);
 };
 
 #endif /* UKF_H */
