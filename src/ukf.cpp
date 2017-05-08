@@ -160,9 +160,9 @@ void UKF::ProcessMeasurement(MeasurementPackage measurement_pack) {
     return;
   }
 
-  /*****************************************************************************
-   *  Prediction (identical for laser and radar)
-   ****************************************************************************/
+    /*****************************************************************************
+    *  Prediction (identical for laser and radar)
+    ****************************************************************************/
 
     //compute the time elapsed between the current and previous measurements
     //dt - expressed in seconds
@@ -172,16 +172,16 @@ void UKF::ProcessMeasurement(MeasurementPackage measurement_pack) {
 
     Prediction(dt);
 
-  /*****************************************************************************
-   *  Update
-   ****************************************************************************/
-  if (measurement_pack.sensor_type_ == MeasurementPackage::RADAR) {
-    // Radar updates
-    if( use_radar_ ) UpdateRadar(measurement_pack);
-  } else if (measurement_pack.sensor_type_ == MeasurementPackage::LASER) {
-    // Laser updates
-    if( use_laser_ ) UpdateLaser(measurement_pack);
-  }
+    /*****************************************************************************
+    *  Update
+    ****************************************************************************/
+    if (measurement_pack.sensor_type_ == MeasurementPackage::RADAR) {
+        // Radar updates
+        if( use_radar_ ) UpdateRadar(measurement_pack);
+    } else if (measurement_pack.sensor_type_ == MeasurementPackage::LASER) {
+        // Laser updates
+        if( use_laser_ ) UpdateLaser(measurement_pack);
+    }
 
   // print the output
   cout << "x_ = " << x_ << endl;
@@ -195,14 +195,11 @@ void UKF::ProcessMeasurement(MeasurementPackage measurement_pack) {
  */
 void UKF::Prediction(double delta_t) {
   /**
-  Complete this function! Estimate the object's location. Modify the state
-  vector, x_. Predict sigma points, the state, and the state covariance matrix.
+  Estimates the object's location. Modifies the state vector, x_.
+  Predicts sigma points, the state, and the state covariance matrix.
    * predict the state
    * Sigma points prediction
    */
-  // generate sigma points
-//  MatrixXd Xsig; // Augmented sigma points
-//  MatrixXd Xsig_pred; // predicted sigma points
   if(print_result_) {
     std::cout << "*** PREDICTION ***" << std::endl;
   }
@@ -285,8 +282,10 @@ void UKF::UpdateRadar(MeasurementPackage measurement_pack) {
 }
 
 /**
- * TODO
- * @param TODO
+ * AugmentedSigmaPoints
+ * @param Xsig_out
+ * @param x
+ * @param P
  */
 void UKF::AugmentedSigmaPoints(MatrixXd* Xsig_out, const VectorXd& x, const MatrixXd& P) {
 
@@ -592,51 +591,3 @@ void UKF::UpdateState(VectorXd* x_out, MatrixXd* P_out, const MatrixXd& Xsig_pre
   *x_out = x_new;
   *P_out = P_new;
 }
-
-  //create example matrix with sigma points in measurement space
-  // MatrixXd Zsig = MatrixXd(n_z, 2 * n_aug + 1);
-
-  //create example vector for mean predicted measurement
-  // VectorXd z_pred = VectorXd(n_z);
-
-  //create example matrix for predicted measurement covariance
-  // MatrixXd S = MatrixXd(n_z,n_z);
-
-  //create example vector for incoming radar measurement
-  // VectorXd z = VectorXd(n_z);
-
-  //create example matrix with predicted sigma points
-  // MatrixXd Xsig_pred = MatrixXd(n_x, 2 * n_aug + 1);
-
-  //create example matrix with predicted sigma points in state space
-  // MatrixXd Xsig_pred = MatrixXd(n_x, 2 * n_aug + 1);
-
-  // MatrixXd Xsig_pred = MatrixXd(n_x, 2 * n_aug + 1);
-  //create example matrix with predicted sigma points
-
-  // MatrixXd Xsig_aug = MatrixXd(n_aug, 2 * n_aug + 1);
-  //create example sigma point matrix
-
-  //x: set example state
-  //P: create example covariance matrix
-
-/*VectorXd z_pred = VectorXd(4);
-Hj_ = tools.CalculateJacobian(ekf_.x_);
-z_pred = tools.fromCartesianToPolar(ekf_.x_);
-SetMeasurementMatrix(Hj_);
-SetMeasurementNoise(R_radar_);
-UpdateLidar(measurement_pack.raw_measurements_, z_pred);*/
-// measurement update
-/*SetMeasurementMatrix(H_laser_);
-SetMeasurementNoise(R_laser_);*/
-
-  /**
-     * Use the sensor type to perform the update step.
-     * Update the state and covariance matrices.
-*/
-  /*
-     * Update the state transition matrix F according to the new elapsed time.
-      - Time is measured in seconds.
-     * Update the process noise covariance matrix.
-     * Use noise_ax = 9 and noise_ay = 9 for your Q matrix.
-   */

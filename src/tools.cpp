@@ -82,23 +82,17 @@ MatrixXd Tools::CalculateJacobian(const VectorXd &x_state) {
 
 
 VectorXd Tools::fromCartesianToPolar(const VectorXd& x_state) {
-  // TODO: COPY AND PASTE
 
+  const double dist = sqrt(pow(x_state[0], 2) + pow(x_state[1], 2));
   VectorXd z_pred(3);
 
-  const double distance = sqrt(pow(x_state[0], 2) + pow(x_state[1], 2));
-
-  if(distance < 1e-4)
-  {
-      // Set angle and distance change rate to zero for very small movement
-      z_pred << distance, 0.0, 0.0;
-  }
-  else
-  {
-      z_pred << distance,
+  // Set angle and distance change rate to zero for very small movement
+  if(dist < 0.0001) {
+      z_pred << dist, 0.0, 0.0;
+  } else {
+      z_pred << dist,
                 atan2(x_state[1], x_state[0]),
-                (x_state[0] * x_state[2] + x_state[1] * x_state[3]) / distance;
+                (x_state[0] * x_state[2] + x_state[1] * x_state[3]) / dist;
   }
-
   return z_pred;
 }
